@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Movie app using express, jwt, session management with cookies.",
   "main": "src/index.mjs",
+  "type": "module",
   "scripts": {
     "start": "node --watch src/index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
