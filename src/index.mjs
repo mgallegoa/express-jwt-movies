@@ -1,14 +1,16 @@
 import express, { json } from "express";
-import { MovieModel } from "./models/local/file-movies.js";
+import { movieRouter } from "./routes/movies.js";
 
-const app = express();
-app.disable("x-powered-by");
-app.use(json());
+export const createApp = ({ movieModel }) => {
+  const app = express();
+  app.disable("x-powered-by");
+  app.use(json());
 
-app.get("/", (req, res) => res.json(MovieModel.getAll()));
+  app.use("/movies", movieRouter({ movieModel }));
 
-const port = process.env.PORT ?? 3000;
+  const port = process.env.PORT ?? 3000;
 
-app.listen(port, () => {
-  console.log(`Server running on port: ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`Server running on port: ${port}`);
+  });
+};
