@@ -8,8 +8,11 @@ GET http://localhost:3000/movies?genre=action
 GET http://localhost:3000/movies/c8a7d63f-3b04-44d3-9d95-8782fd7dcfaf
 
 ###
+GET http://localhost:3000/movies/9f40b8e8-394c-4516-aa3e-3f60283ed69e
+
+###
 POST http://localhost:3000/movies
-Content-type application/json
+Content-type: application/json
 
 {
 "title": "Addams Family",
@@ -23,3 +26,23 @@ Content-type application/json
   ],
   "rate": 9
 }
+
+###
+PATCH http://localhost:3000/movies/9f40b8e8-394c-4516-aa3e-3f60283ed69e
+Content-type: application/json
+
+{
+"title": "Addams Family Updated",
+  "duration": 142,
+  "poster": "https://mgallegoa.github.io/vanillaJS/basic_express_movies_mvc/public/images/The_Dark_Knight.jpg",
+  "genre": [
+    "Action",
+    "Drama"
+  ],
+  "rate": 9
+}
+
+
+###
+DELETE http://localhost:3000/movies/5faf766a-2322-4e5b-97be-812886584e0c
+Content-type: application/json

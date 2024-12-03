@@ -34,4 +34,23 @@ export class MovieModel {
     movies.push(newMovie);
     return newMovie;
   }
+  static async update({ id, data }) {
+    const movieIndex = movies.findIndex((m) => m.id === id);
+    if (movieIndex < 0) {
+      return null;
+    }
+    movies[movieIndex] = {
+      ...movies[movieIndex],
+      ...data,
+    };
+    return movies[movieIndex];
+  }
+  static async delete({ id }) {
+    const movieIndex = movies.findIndex((m) => m.id === id);
+    if (movieIndex < 0) {
+      return null;
+    }
+    movies.splice(movieIndex, 1);
+    return true;
+  }
 }
