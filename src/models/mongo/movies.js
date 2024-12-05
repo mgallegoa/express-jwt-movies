@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 
 const uri =
-  "mongodb+srv://mgallegoa:n9haYTO0JktKVWIK@manuelmongodb.hrlxt.mongodb.net/?retryWrites=true&w=majority&appName=ManuelMongoDb";
+  "mongodb+srv://mgallegoa:xxxxxxxxxxxxxxxx@manuelmongodb.hrlxt.mongodb.net/?retryWrites=true&w=majority&appName=ManuelMongoDb";
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -43,5 +43,32 @@ export class MovieModel {
     const connection = await connect();
     const objectId = new ObjectId({ id });
     return connection.findOne({ _id: objectId });
+  }
+  static async create({ data }) {
+    const connection = await connect();
+    const { insertedId } = connection.insertOne(data);
+    return {
+      id: insertedId,
+      ...data,
+    };
+  }
+  static async update({ id, data }) {
+    const connection = await connect();
+    const objectId = new ObjectId({ id });
+    const result = await connection.findOneAndUpdate(
+      { _id: objectId },
+      { $set: data },
+      { returnDocument: "after" },
+    );
+    if (result) {
+      return result;
+    }
+    return null;
+  }
+  static async delete({ id }) {
+    const connection = await connect();
+    const objectId = new ObjectId({ id });
+    const { deletedCount } = await connection.deleteOne({ _id: objectId });
+    return deletedCount > 0;
   }
 }
