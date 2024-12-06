@@ -1,6 +1,7 @@
 import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 
 const uri =
+  process.ENV.MONGO_DATABASE_URL ??
   "mongodb+srv://mgallegoa:xxxxxxxxxxxxxxxx@manuelmongodb.hrlxt.mongodb.net/?retryWrites=true&w=majority&appName=ManuelMongoDb";
 
 const client = new MongoClient(uri, {
