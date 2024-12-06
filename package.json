@@ -5,8 +5,9 @@
   "main": "src/index.mjs",
   "type": "module",
   "scripts": {
-    "devLocal": "nodemon src/config-local.js",
-    "devMongo": "nodemon src/config-mongo.js",
+    "devLocal": "nodemon --env-file=dev-config.env src/config-local.js",
+    "devMongo": "nodemon --env-file=dev-config.env src/config-mongo.js",
+    "devMysql": "nodemon --env-file=dev-config.env src/config-mysql.js",
     "start": "node --watch src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -37,8 +38,10 @@
   },
   "dependencies": {
     "cors": "2.8.5",
+    "dotenv": "16.4.7",
     "express": "4.21.1",
     "mongodb": "6.11.0",
+    "mysql2": "3.11.5",
     "zod": "3.23.8"
   }
 }
