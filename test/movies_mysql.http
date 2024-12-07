@@ -1,0 +1,48 @@
+###
+GET http://localhost:3000/movies
+
+###
+GET http://localhost:3000/movies?genre=action
+
+###
+GET http://localhost:3000/movies/8894f964-b353-11ef-a3f5-5c61990d5c8f
+
+###
+GET http://localhost:3000/movies/674f706b61a1e32320ecf1e4
+
+###
+POST http://localhost:3000/movies
+Content-type: application/json
+
+{
+"title": "Addams Family Mongo BD",
+  "year": 2003,
+  "director": "Addams Directors",
+  "duration": 132,
+  "poster": "https://mgallegoa.github.io/vanillaJS/basic_express_movies_mvc/public/images/The_Dark_Knight.jpg",
+  "genre": [
+    "Action",
+    "Drama"
+  ],
+  "rate": 9
+}
+
+###
+PATCH http://localhost:3000/movies/674f66507993ee0afe737290
+Content-type: application/json
+
+{
+"title": "Addams Family Mongo BD Updated 3",
+  "duration": 333,
+  "poster": "https://mgallegoa.github.io/vanillaJS/basic_express_movies_mvc/public/images/The_Dark_Knight.jpg",
+  "genre": [
+    "Action",
+    "Drama"
+  ],
+  "rate": 3
+}
+
+
+###
+DELETE http://localhost:3000/movies/674f706b61a1e32320ecf1e4
+Content-type: application/json
