@@ -54,27 +54,16 @@ export class MovieModel {
   }
   static async create({ data }) {
     const { genre, title, year, director, duration, poster, rate } = data;
-
-    const [genreIds] = await connection.query(
-      "SELECT id FROM genre g WHERE g.name IN (?);",
-      [genre],
-    );
-    if (genreIds.length === 0) {
-      return { error: `Genre must be a valid value. Value send: ${genre}` };
-    }
     const [binaryUUID] = await connection.query(
       "SELECT UUID_TO_BIN(uuid()) id;",
     );
-    let values = new Array();
-    for (const objectId of genreIds) {
-      values.push(new Array(binaryUUID[0].id, objectId.id));
-    }
-    const [result] = await connection.query(
-      "INSERT INTO movie_genre (movie_id, genre_id) VALUES ?;",
-      [values],
-    );
-    if (result.affectedRows === 0) {
-      return { error: "Genre and movies not inserted." };
+
+    const result = await this.insertMovieGenre({
+      binaryUUID: binaryUUID[0].id,
+      genre,
+    });
+    if (result.error) {
+      return { error: result.error };
     }
     const [movieInserted] = await connection.query(
       `INSERT INTO movie (id, title, year, director, duration, poster, rate) 
@@ -84,7 +73,7 @@ export class MovieModel {
     if (movieInserted.affectedRows === 0) {
       return { error: `Movies not inserted. Binary UUID: ${binaryUUID[0].id}` };
     }
-    const movieCreated = await MovieModel.getByBinaryUUID({
+    const movieCreated = await this.getByBinaryUUID({
       binaryUUID: binaryUUID[0].id,
     });
     return movieCreated;
@@ -98,6 +87,60 @@ export class MovieModel {
       [binaryUUID],
     );
     return movie;
+  }
+  static async insertMovieGenre({ binaryUUID, genre }) {
+    const [genreIds] = await connection.query(
+      "SELECT id FROM genre g WHERE g.name IN (?);",
+      [genre],
+    );
+    if (genreIds.length === 0) {
+      return { error: `Genre must be a valid value. Value send: ${genre}` };
+    }
+
+    let values = new Array();
+    for (const objectId of genreIds) {
+      values.push(new Array(binaryUUID, objectId.id));
+    }
+    const [result] = await connection.query(
+      "INSERT INTO movie_genre (movie_id, genre_id) VALUES ?;",
+      [values],
+    );
+    if (result.affectedRows === 0) {
+      return { error: "Genre and movies not inserted." };
+    }
+    return {};
+  }
+  static async update({ id, data }) {
+    const { genre } = data;
+    if (genre) {
+      await connection.query(
+        "DELETE FROM movie_genre WHERE movie_id = UUID_TO_BIN(?)",
+        [id],
+      );
+      const [binaryUUID] = await connection.query("SELECT UUID_TO_BIN(?) id;", [
+        id,
+      ]);
+      const result = await this.insertMovieGenre({
+        binaryUUID: binaryUUID[0].id,
+        genre,
+      });
+      if (result.error) {
+        return { error: result.error };
+      }
+    }
+    delete data.genre;
+    const [result] = await connection.query(
+      "UPDATE movie SET ? WHERE id = UUID_TO_BIN(?);",
+      [data, id],
+    );
+    if (result.affectedRows === 0) {
+      return null;
+    }
+    return {
+      id,
+      genre,
+      ...data,
+    };
   }
   static async delete({ id }) {
     await connection.query(
