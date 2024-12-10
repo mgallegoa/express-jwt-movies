@@ -52,4 +52,51 @@ export class MovieModel {
     );
     return movie;
   }
+  static async create({ data }) {
+    const { genre, title, year, director, duration, poster, rate } = data;
+
+    const [genreIds] = await connection.query(
+      "SELECT id FROM genre g WHERE g.name IN (?);",
+      [genre],
+    );
+    if (genreIds.length === 0) {
+      return { error: `Genre must be a valid value. Value send: ${genre}` };
+    }
+    const [binaryUUID] = await connection.query(
+      "SELECT UUID_TO_BIN(uuid()) id;",
+    );
+    let values = new Array();
+    for (const objectId of genreIds) {
+      values.push(new Array(binaryUUID[0].id, objectId.id));
+    }
+    const [result] = await connection.query(
+      "INSERT INTO movie_genre (movie_id, genre_id) VALUES ?;",
+      [values],
+    );
+    if (result.affectedRows === 0) {
+      return { error: "Genre and movies not inserted." };
+    }
+    const [movieInserted] = await connection.query(
+      `INSERT INTO movie (id, title, year, director, duration, poster, rate) 
+          VALUES (?,?,?,?,?,?,?);`,
+      [binaryUUID[0].id, title, year, director, duration, poster, rate],
+    );
+    if (movieInserted.affectedRows === 0) {
+      return { error: `Movies not inserted. Binary UUID: ${binaryUUID[0].id}` };
+    }
+    const movieCreated = await MovieModel.getByBinaryUUID({
+      binaryUUID: binaryUUID[0].id,
+    });
+    return movieCreated;
+  }
+  static async getByBinaryUUID({ binaryUUID }) {
+    const [movie] = await connection.query(
+      `SELECT title, year, director, duration, poster, 
+          rate, BIN_TO_UUID(id) id 
+       FROM movie
+       WHERE id = ?;`,
+      [binaryUUID],
+    );
+    return movie;
+  }
 }
