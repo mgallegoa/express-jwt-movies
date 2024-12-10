@@ -99,4 +99,18 @@ export class MovieModel {
     );
     return movie;
   }
+  static async delete({ id }) {
+    await connection.query(
+      "DELETE FROM movie_genre WHERE movie_id = UUID_TO_BIN(?);",
+      [id],
+    );
+    const [result] = await connection.query(
+      "DELETE FROM movie WHERE id = UUID_TO_BIN(?);",
+      [id],
+    );
+    if (result.affectedRows === 0) {
+      return false;
+    }
+    return true;
+  }
 }
